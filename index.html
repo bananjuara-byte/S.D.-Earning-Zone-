@@ -2,232 +2,189 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>AI Promo Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.D. Earning Zone</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#121212;color:#fff}
-.box{max-width:600px;margin:30px auto;padding:20px;border-radius:10px;background:#1f1f1f}
-input,button,select{width:100%;padding:12px;margin:8px 0;border:none;border-radius:6px}
-button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer}
-.hidden{display:none}
-.account{background:#2b2b2b;padding:15px;margin-top:10px;border-radius:8px}
-.copy{background:#facc15;color:#000;margin-top:5px}
-.menu{position:fixed;top:10px;right:10px;font-size:26px;cursor:pointer}
-.menuBox{position:fixed;top:50px;right:10px;background:#000;padding:10px;display:none}
+body{
+  font-family: Arial, sans-serif;
+  background:#0f172a;
+  color:#fff;
+  margin:0;
+}
+.page{ display:none; padding:20px; }
+.card{
+  max-width:400px;
+  margin:40px auto;
+  background:#020617;
+  padding:20px;
+  border-radius:10px;
+}
+input, select, button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  border:none;
+}
+button{
+  background:#22c55e;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.secondary{ background:#334155; color:#fff; }
+.topbar{
+  background:#020617;
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+}
+.output{
+  background:#020617;
+  padding:15px;
+  border-radius:8px;
+  margin-top:15px;
+}
+.copy{
+  background:#38bdf8;
+  margin-top:5px;
+}
+small{color:#94a3b8}
 </style>
 </head>
 
 <body>
 
-<div class="menu" onclick="toggleMenu()">⋮</div>
-<div class="menuBox" id="menuBox">
-  <button onclick="openAdmin()">Admin Panel</button>
+<div class="topbar">
+  <b>AI System</b>
+  <button class="secondary" onclick="logout()">Logout</button>
 </div>
 
 <!-- LOGIN -->
-<div class="box" id="loginPage">
-<h2>Login</h2>
-<input id="loginPhone" placeholder="Phone">
-<input type="password" id="loginPass" placeholder="Password">
-<button onclick="togglePass('loginPass')">👁 Show / Hide</button>
-<button onclick="login()">Login</button>
-<p onclick="showSignup()" style="text-align:center;cursor:pointer;">Create new account</p>
+<div id="loginPage" class="page">
+  <div class="card">
+    <h2>Login</h2>
+    <input id="loginUser" placeholder="Username">
+    <input id="loginPass" type="password" placeholder="Password">
+    <small><input type="checkbox" onclick="togglePass('loginPass')"> Show password</small>
+    <button onclick="login()">Login</button>
+    <button class="secondary" onclick="show(signupPage)">Create account</button>
+  </div>
 </div>
 
 <!-- SIGNUP -->
-<div class="box hidden" id="signupPage">
-<h2>Create Account</h2>
-<input id="fn" placeholder="First Name">
-<input id="ln" placeholder="Last Name">
-<input id="sp" placeholder="Phone">
-<input type="password" id="spw" placeholder="Password (6+)">
-<button onclick="togglePass('spw')">👁 Show / Hide</button>
-<button onclick="signup()">Sign Up</button>
-<p onclick="showLogin()" style="text-align:center;cursor:pointer;">Already have account</p>
+<div id="signupPage" class="page">
+  <div class="card">
+    <h2>Sign Up</h2>
+    <input id="suUser" placeholder="Username">
+    <input id="suPass" type="password" placeholder="Password">
+    <small><input type="checkbox" onclick="togglePass('suPass')"> Show password</small>
+    <button onclick="signup()">Sign Up</button>
+    <button class="secondary" onclick="show(loginPage)">Back to login</button>
+  </div>
 </div>
 
 <!-- PROMO -->
-<div class="box hidden" id="promoPage">
-<h2>Enter Promo Code</h2>
-<input id="promoInput">
-<button onclick="checkPromo()">Enter</button>
-</div>
+<div id="promoPage" class="page">
+  <div class="card">
+    <h2>Generate Profile</h2>
+    <select id="gender">
+      <option value="">Select gender</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select>
+    <button onclick="generate()">Generate</button>
 
-<!-- MAIN -->
-<div class="box hidden" id="mainPage">
-<h2>Generate Account</h2>
-<select id="gender">
-<option value="">Select Gender</option>
-<option value="Male">Male</option>
-<option value="Female">Female</option>
-</select>
-<button onclick="generate()">Generate</button>
-<div id="result"></div>
-</div>
-
-<!-- ADMIN LOGIN -->
-<div class="box hidden" id="adminLogin">
-<h2>Admin Login</h2>
-<input type="password" id="adminPass" placeholder="Admin Password">
-<button onclick="adminLogin()">Login</button>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="box hidden" id="adminPanel">
-<h2>Admin Panel</h2>
-<input id="newPromo" placeholder="New Promo Code">
-<button onclick="addPromo()">Add Promo</button>
-<h3>Promo Codes</h3>
-<div id="promoList"></div>
-<h3>Stats</h3>
-<p id="statsInfo"></p>
+    <div id="result"></div>
+  </div>
 </div>
 
 <script>
-/* ---------- NAV ---------- */
-const pages=document.querySelectorAll(".box");
+const loginPage = document.getElementById("loginPage");
+const signupPage = document.getElementById("signupPage");
+const promoPage = document.getElementById("promoPage");
+const resultBox = document.getElementById("result");
+
+const used = JSON.parse(localStorage.getItem("usedProfiles")||"[]");
+
 function show(p){
- pages.forEach(x=>x.classList.add("hidden"));
- p.classList.remove("hidden");
-}
-function toggleMenu(){
- document.getElementById("menuBox").style.display =
- menuBox.style.display=="block"?"none":"block";
+  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
+  p.style.display="block";
+  history.pushState({}, "");
 }
 
-/* ---------- AUTO LOGIN ---------- */
-if(localStorage.getItem("logged")){
- show(document.getElementById("promoPage"));
-}
+window.onpopstate = ()=>{};
 
-/* ---------- USERS ---------- */
-let USERS=JSON.parse(localStorage.getItem("users")||"[]");
+window.onload = ()=>{
+  if(localStorage.getItem("logged")==="1") show(promoPage);
+  else show(loginPage);
+};
+
+function togglePass(id){
+  const i=document.getElementById(id);
+  i.type = i.type==="password" ? "text" : "password";
+}
 
 function signup(){
- if(!fn.value||!ln.value||!sp.value||spw.value.length<6)
-  return alert("Fill all fields (password 6+)");
- USERS.push({phone:sp.value,password:spw.value});
- localStorage.setItem("users",JSON.stringify(USERS));
- alert("Account created");
- showLogin();
+  const u=suUser.value, p=suPass.value;
+  if(!u||!p) return alert("Fill all");
+  localStorage.setItem("user",u);
+  localStorage.setItem("pass",p);
+  alert("Account created");
+  show(loginPage);
 }
 
 function login(){
- let u=USERS.find(x=>x.phone==loginPhone.value && x.password==loginPass.value);
- if(!u)return alert("Wrong login");
- localStorage.setItem("logged","1");
- show(document.getElementById("promoPage"));
+  if(loginUser.value===localStorage.getItem("user") &&
+     loginPass.value===localStorage.getItem("pass")){
+      localStorage.setItem("logged","1");
+      show(promoPage);
+  }else alert("Wrong password");
 }
 
-/* ---------- PASSWORD ---------- */
-function togglePass(id){
- let x=document.getElementById(id);
- x.type=x.type=="password"?"text":"password";
+function logout(){
+  localStorage.removeItem("logged");
+  show(loginPage);
 }
 
-/* ---------- PROMO ---------- */
-let PROMOS=JSON.parse(localStorage.getItem("promos")||"[]");
-
-function checkPromo(){
- if(PROMOS.includes(promoInput.value)){
-  show(document.getElementById("mainPage"));
- }else alert("Invalid Promo");
-}
-
-/* ---------- ADMIN ---------- */
-const ADMIN_PASS="@123456@";
-
-function openAdmin(){
- show(document.getElementById("adminLogin"));
-}
-
-function adminLogin(){
- const pass=document.getElementById("adminPass").value.trim();
- if(pass===ADMIN_PASS){
-  show(document.getElementById("adminPanel"));
-  renderPromo();
-  updateStats();
- }else alert("Wrong password");
-}
-
-function addPromo(){
- if(!newPromo.value)return;
- PROMOS.push(newPromo.value);
- localStorage.setItem("promos",JSON.stringify(PROMOS));
- newPromo.value="";
- renderPromo();
-}
-
-function renderPromo(){
- promoList.innerHTML="";
- PROMOS.forEach((p,i)=>{
-  let d=document.createElement("div");
-  d.innerHTML=p+" ";
-  let b=document.createElement("button");
-  b.textContent="Delete";
-  b.onclick=()=>{
-   PROMOS.splice(i,1);
-   localStorage.setItem("promos",JSON.stringify(PROMOS));
-   renderPromo();
-  }
-  d.appendChild(b);
-  promoList.appendChild(d);
- });
-}
-
-function updateStats(){
- statsInfo.innerText="Total Users: "+USERS.length;
-}
-
-/* ---------- GENERATOR ---------- */
-const m1=["Arif","Rahim","Hasan","Tanvir"];
-const m2=["Ahmed","Khan","Islam","Hossain"];
-const f1=["Ayesha","Nusrat","Mim","Tania"];
-const f2=["Akter","Begum","Sultana"];
-
-const bios = [
-"I am a hardworking and self motivated person who believes in consistency, honesty, and continuous self improvement while always looking for new opportunities to grow in online and digital platforms.",
-
-"I am a confident and responsible individual who enjoys learning new skills, exploring digital income sources, and working patiently toward long term success with discipline and dedication.",
-
-"I am a positive minded and goal oriented person who believes in smart work, time management, and using technology effectively to build a better future through online opportunities."
-];
-
-function rnd(n){return Math.floor(Math.random()*n);}
-function genNum(l){let s="";while(s.length<l)s+=Math.floor(Math.random()*10);return s;}
+const data={
+Male:[
+ {u:"jack_91",p:"Jk@2391",b:"Focused on goals. Living strong."},
+ {u:"ryan_fx",p:"Rx!772",b:"Learning every day."}
+],
+Female:[
+ {u:"luna_x",p:"Ln@778",b:"Dreamer. Creator."},
+ {u:"ava_joy",p:"Av#992",b:"Peaceful mind, bold heart."}
+]
+};
 
 function generate(){
- if(!gender.value)return alert("Select gender");
- let name = gender.value=="Male"
- ? m1[rnd(m1.length)]+" "+m2[rnd(m2.length)]
- : f1[rnd(f1.length)]+" "+f2[rnd(f2.length)];
+  const g=gender.value;
+  if(!g) return alert("Select gender");
 
- let username=name.replace(" ","").toLowerCase()+genNum(6);
- let password=genNum(8);
- let bio=bios[rnd(bios.length)];
+  const list=data[g].filter(x=>!used.includes(x.u));
+  if(!list.length) return alert("No new profile left");
 
- result.innerHTML=`
- <div class="account">
- <b>Name:</b> ${name}<br>
- <button class="copy" onclick="copy('${name}')">Copy Name</button><br><br>
+  const x=list[Math.floor(Math.random()*list.length)];
+  used.push(x.u);
+  localStorage.setItem("usedProfiles",JSON.stringify(used));
 
- <b>Username:</b> ${username}<br>
- <button class="copy" onclick="copy('${username}')">Copy Username</button><br><br>
-
- <b>Password:</b> ${password}<br>
- <button class="copy" onclick="copy('${password}')">Copy Password</button><br><br>
-
- <b>Bio:</b><br>${bio}
- </div>`;
+  resultBox.innerHTML=`
+    <div class="output">
+      <b>Username:</b> ${x.u}<br>
+      <b>Password:</b> ${x.p}<br>
+      <b>Bio:</b> ${x.b}
+      <button class="copy" onclick="copyText('${x.u}')">Copy Username</button>
+      <button class="copy" onclick="copyText('${x.p}')">Copy Password</button>
+      <button class="copy" onclick="copyText('${x.b}')">Copy Bio</button>
+    </div>`;
 }
 
-function copy(t){navigator.clipboard.writeText(t);}
-
-/* ---------- SWITCH ---------- */
-function showSignup(){show(signupPage);}
-function showLogin(){show(loginPage);}
+function copyText(t){
+  navigator.clipboard.writeText(t);
+  alert("Copied");
+}
 </script>
 
 </body>
- </html>
+</html>
