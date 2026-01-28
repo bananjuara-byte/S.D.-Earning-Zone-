@@ -11,17 +11,18 @@ body{margin:0;font-family:Arial;background:#121212;color:#fff}
 input,button,select{width:100%;padding:12px;margin:8px 0;border:none;border-radius:6px}
 button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer}
 .hidden{display:none}
-.account{background:#2b2b2b;padding:15px;margin-top:15px;border-radius:8px}
-.copy{background:#facc15;color:#000;margin-top:6px}
+.account{background:#2b2b2b;padding:15px;margin-top:10px;border-radius:8px}
+.copy{background:#facc15;color:#000;margin-top:5px}
 .menu{position:fixed;top:10px;right:10px;font-size:26px;cursor:pointer}
-.menuBox{position:fixed;top:50px;right:10px;background:#000;padding:10px;border-radius:6px;display:none}
+.menuBox{position:fixed;top:50px;right:10px;background:#000;padding:10px;display:none}
 </style>
 </head>
+
 <body>
 
 <div class="menu" onclick="toggleMenu()">⋮</div>
 <div class="menuBox" id="menuBox">
-<button onclick="openAdmin()">Admin Panel</button>
+  <button onclick="openAdmin()">Admin Panel</button>
 </div>
 
 <!-- LOGIN -->
@@ -31,7 +32,7 @@ button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer}
 <input type="password" id="loginPass" placeholder="Password">
 <button onclick="togglePass('loginPass')">👁 Show / Hide</button>
 <button onclick="login()">Login</button>
-<p onclick="showSignup()" style="text-align:center;cursor:pointer">Create new account</p>
+<p onclick="showSignup()" style="text-align:center;cursor:pointer;">Create new account</p>
 </div>
 
 <!-- SIGNUP -->
@@ -43,7 +44,7 @@ button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer}
 <input type="password" id="spw" placeholder="Password (6+)">
 <button onclick="togglePass('spw')">👁 Show / Hide</button>
 <button onclick="signup()">Sign Up</button>
-<p onclick="showLogin()" style="text-align:center;cursor:pointer">Already have account</p>
+<p onclick="showLogin()" style="text-align:center;cursor:pointer;">Already have account</p>
 </div>
 
 <!-- PROMO -->
@@ -77,138 +78,154 @@ button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer}
 <h2>Admin Panel</h2>
 <input id="newPromo" placeholder="New Promo Code">
 <button onclick="addPromo()">Add Promo</button>
+<h3>Promo Codes</h3>
 <div id="promoList"></div>
+<h3>Stats</h3>
 <p id="statsInfo"></p>
 </div>
 
 <script>
-/* ---------- GLOBAL ---------- */
+/* ---------- NAV ---------- */
 const pages=document.querySelectorAll(".box");
-const menuBox=document.getElementById("menuBox");
-
-/* ---------- PAGE SYSTEM ---------- */
 function show(p){
  pages.forEach(x=>x.classList.add("hidden"));
  p.classList.remove("hidden");
- history.pushState({p:p.id},"");
 }
-window.onpopstate=e=>{
- if(e.state){
-  pages.forEach(x=>x.classList.add("hidden"));
-  document.getElementById(e.state.p).classList.remove("hidden");
- }
-}
-
-/* ---------- MENU ---------- */
 function toggleMenu(){
- menuBox.style.display = menuBox.style.display==="block"?"none":"block";
-}
-function openAdmin(){
- menuBox.style.display="none";
- show(adminLogin);
+ document.getElementById("menuBox").style.display =
+ menuBox.style.display=="block"?"none":"block";
 }
 
-/* ---------- AUTH ---------- */
+/* ---------- AUTO LOGIN ---------- */
+if(localStorage.getItem("logged")){
+ show(document.getElementById("promoPage"));
+}
+
+/* ---------- USERS ---------- */
 let USERS=JSON.parse(localStorage.getItem("users")||"[]");
-if(localStorage.getItem("logged")) show(promoPage);
 
 function signup(){
  if(!fn.value||!ln.value||!sp.value||spw.value.length<6)
-  return alert("Fill all fields");
+  return alert("Fill all fields (password 6+)");
  USERS.push({phone:sp.value,password:spw.value});
  localStorage.setItem("users",JSON.stringify(USERS));
  alert("Account created");
- show(loginPage);
+ showLogin();
 }
+
 function login(){
  let u=USERS.find(x=>x.phone==loginPhone.value && x.password==loginPass.value);
- if(!u) return alert("Wrong login");
+ if(!u)return alert("Wrong login");
  localStorage.setItem("logged","1");
- show(promoPage);
+ show(document.getElementById("promoPage"));
 }
+
+/* ---------- PASSWORD ---------- */
 function togglePass(id){
  let x=document.getElementById(id);
- x.type = x.type==="password"?"text":"password";
+ x.type=x.type=="password"?"text":"password";
 }
-function showSignup(){show(signupPage)}
-function showLogin(){show(loginPage)}
 
 /* ---------- PROMO ---------- */
 let PROMOS=JSON.parse(localStorage.getItem("promos")||"[]");
+
 function checkPromo(){
- PROMOS.includes(promoInput.value)?show(mainPage):alert("Invalid Promo");
+ if(PROMOS.includes(promoInput.value)){
+  show(document.getElementById("mainPage"));
+ }else alert("Invalid Promo");
 }
 
 /* ---------- ADMIN ---------- */
+const ADMIN_PASS="@123456@";
+
+function openAdmin(){
+ show(document.getElementById("adminLogin"));
+}
+
 function adminLogin(){
- if(adminPass.value==="@123456@"){
-  show(adminPanel);
+ const pass=document.getElementById("adminPass").value.trim();
+ if(pass===ADMIN_PASS){
+  show(document.getElementById("adminPanel"));
   renderPromo();
   updateStats();
- } else alert("Wrong admin password");
+ }else alert("Wrong password");
 }
+
 function addPromo(){
- if(!newPromo.value) return;
+ if(!newPromo.value)return;
  PROMOS.push(newPromo.value);
  localStorage.setItem("promos",JSON.stringify(PROMOS));
  newPromo.value="";
  renderPromo();
 }
+
 function renderPromo(){
  promoList.innerHTML="";
  PROMOS.forEach((p,i)=>{
-  promoList.innerHTML+=`${p} <button onclick="delPromo(${i})">Delete</button><br>`;
+  let d=document.createElement("div");
+  d.innerHTML=p+" ";
+  let b=document.createElement("button");
+  b.textContent="Delete";
+  b.onclick=()=>{
+   PROMOS.splice(i,1);
+   localStorage.setItem("promos",JSON.stringify(PROMOS));
+   renderPromo();
+  }
+  d.appendChild(b);
+  promoList.appendChild(d);
  });
 }
-function delPromo(i){
- PROMOS.splice(i,1);
- localStorage.setItem("promos",JSON.stringify(PROMOS));
- renderPromo();
-}
+
 function updateStats(){
- statsInfo.innerText=`Total Users: ${USERS.length}`;
+ statsInfo.innerText="Total Users: "+USERS.length;
 }
 
 /* ---------- GENERATOR ---------- */
-let used=[];
-const m1=["Arif","Rahim","Hasan","Tanvir","Sabbir","Imran"];
-const m2=["Ahmed","Islam","Khan","Hossain","Rahman"];
-const f1=["Ayesha","Nusrat","Mim","Tania","Sadia"];
-const f2=["Akter","Begum","Sultana","Khatun"];
-const bio="Focused on long term success and personal growth by learning new skills every day and applying discipline consistency patience and smart work to achieve financial independence and a better future.";
+const m1=["Arif","Rahim","Hasan","Tanvir"];
+const m2=["Ahmed","Khan","Islam","Hossain"];
+const f1=["Ayesha","Nusrat","Mim","Tania"];
+const f2=["Akter","Begum","Sultana"];
 
-function rnd(n){return Math.floor(Math.random()*n)}
-function num(l){let s="";while(s.length<l)s+=Math.floor(Math.random()*10);return s}
+const bios=[
+"আমি একজন পরিশ্রমী ও আত্মবিশ্বাসী মানুষ যে সবসময় নতুন সুযোগ খুঁজে বের করতে ভালোবাসি এবং নিজের দক্ষতা উন্নয়নে বিশ্বাসী।",
+"আমি প্রযুক্তি, অনলাইন কাজ এবং ডিজিটাল আয়ের প্রতি আগ্রহী একজন বাস্তববাদী ব্যক্তি যে নিজের ভবিষ্যৎ গড়তে দৃঢ়প্রতিজ্ঞ।",
+"আমি দায়িত্বশীল ও ধৈর্যশীল একজন মানুষ যে সবসময় সততার সাথে কাজ করতে পছন্দ করি এবং লক্ষ্য অর্জনে বিশ্বাস রাখি।"
+];
+
+function rnd(n){return Math.floor(Math.random()*n);}
+function genNum(l){let s="";while(s.length<l)s+=Math.floor(Math.random()*10);return s;}
 
 function generate(){
- if(!gender.value) return alert("Select gender");
-
- let name = gender.value==="Male"
+ if(!gender.value)return alert("Select gender");
+ let name = gender.value=="Male"
  ? m1[rnd(m1.length)]+" "+m2[rnd(m2.length)]
  : f1[rnd(f1.length)]+" "+f2[rnd(f2.length)];
 
- if(used.includes(name)) return generate();
- used.push(name);
-
- let username=name.replace(" ","").toLowerCase()+num(10);
- let pass=num(10);
+ let username=name.replace(" ","").toLowerCase()+genNum(6);
+ let password=genNum(8);
+ let bio=bios[rnd(bios.length)];
 
  result.innerHTML=`
  <div class="account">
  <b>Name:</b> ${name}<br>
- <button class="copy" onclick="copyText('${name}')">Copy Name</button><br><br>
+ <button class="copy" onclick="copy('${name}')">Copy Name</button><br><br>
 
  <b>Username:</b> ${username}<br>
- <button class="copy" onclick="copyText('${username}')">Copy Username</button><br><br>
+ <button class="copy" onclick="copy('${username}')">Copy Username</button><br><br>
 
- <b>Password:</b> ${pass}<br>
- <button class="copy" onclick="copyText('${pass}')">Copy Password</button><br><br>
+ <b>Password:</b> ${password}<br>
+ <button class="copy" onclick="copy('${password}')">Copy Password</button><br><br>
 
- <b>Bio:</b><br>${bio}<br>
- <button class="copy" onclick="copyText('${bio}')">Copy Bio</button>
+ <b>Bio:</b><br>${bio}
  </div>`;
 }
-function copyText(t){navigator.clipboard.writeText(t)}
+
+function copy(t){navigator.clipboard.writeText(t);}
+
+/* ---------- SWITCH ---------- */
+function showSignup(){show(signupPage);}
+function showLogin(){show(loginPage);}
 </script>
+
 </body>
-</html>
+ </html>
