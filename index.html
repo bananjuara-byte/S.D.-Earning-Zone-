@@ -2,187 +2,202 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AI Promo Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>S.D. Earning Zone</title>
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#0f172a;
-  color:#fff;
-  margin:0;
-}
-.page{ display:none; padding:20px; }
-.card{
-  max-width:400px;
-  margin:40px auto;
-  background:#020617;
-  padding:20px;
-  border-radius:10px;
-}
-input, select, button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:6px;
-  border:none;
-}
-button{
-  background:#22c55e;
-  font-weight:bold;
-  cursor:pointer;
-}
-button.secondary{ background:#334155; color:#fff; }
-.topbar{
-  background:#020617;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-}
-.output{
-  background:#020617;
-  padding:15px;
-  border-radius:8px;
-  margin-top:15px;
-}
-.copy{
-  background:#38bdf8;
-  margin-top:5px;
-}
-small{color:#94a3b8}
+body{margin:0;font-family:Arial;background:#121212;color:#fff;}
+.box{max-width:600px;margin:30px auto;padding:20px;border-radius:10px;background:#1f1f1f;}
+input,button,select{width:100%;padding:12px;margin:8px 0;border:none;border-radius:6px;}
+button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer;}
+.hidden{display:none;}
+.account{background:#2b2b2b;padding:15px;margin-top:10px;border-radius:8px;}
+.copy{background:#facc15;color:#000;margin-left:5px;}
+.menu{position:fixed;top:10px;right:10px;font-size:26px;cursor:pointer;color:#FFD700;}
+.menuBox{position:fixed;top:50px;right:10px;background:#000;padding:10px;display:none;}
 </style>
 </head>
-
 <body>
 
-<div class="topbar">
-  <b>AI System</b>
-  <button class="secondary" onclick="logout()">Logout</button>
+<!-- MENU -->
+<div class="menu" onclick="toggleMenu()">⋮</div>
+<div class="menuBox" id="menuBox">
+  <button onclick="openAdmin()">Admin Panel</button>
 </div>
 
-<!-- LOGIN -->
-<div id="loginPage" class="page">
-  <div class="card">
-    <h2>Login</h2>
-    <input id="loginUser" placeholder="Username">
-    <input id="loginPass" type="password" placeholder="Password">
-    <small><input type="checkbox" onclick="togglePass('loginPass')"> Show password</small>
-    <button onclick="login()">Login</button>
-    <button class="secondary" onclick="show(signupPage)">Create account</button>
-  </div>
+<!-- LOGIN PAGE -->
+<div class="box" id="loginPage">
+<h2>Login</h2>
+<input id="loginPhone" placeholder="Phone">
+<input type="password" id="loginPass" placeholder="Password">
+<button onclick="togglePass('loginPass')">👁 Show / Hide</button>
+<button onclick="login()">Login</button>
+<p onclick="showSignup()" style="text-align:center;cursor:pointer;">Create New Account</p>
 </div>
 
-<!-- SIGNUP -->
-<div id="signupPage" class="page">
-  <div class="card">
-    <h2>Sign Up</h2>
-    <input id="suUser" placeholder="Username">
-    <input id="suPass" type="password" placeholder="Password">
-    <small><input type="checkbox" onclick="togglePass('suPass')"> Show password</small>
-    <button onclick="signup()">Sign Up</button>
-    <button class="secondary" onclick="show(loginPage)">Back to login</button>
-  </div>
+<!-- SIGNUP PAGE -->
+<div class="box hidden" id="signupPage">
+<h2>Create Account</h2>
+<input id="fn" placeholder="First Name">
+<input id="ln" placeholder="Last Name">
+<input id="sp" placeholder="Phone">
+<input id="email" placeholder="Email (must be Gmail)">
+<input type="password" id="spw" placeholder="Password (6+)">
+<button onclick="togglePass('spw')">👁 Show / Hide</button>
+<button onclick="signup()">Sign Up</button>
+<p onclick="showLogin()" style="text-align:center;cursor:pointer;">Already have account? Login</p>
 </div>
 
-<!-- PROMO -->
-<div id="promoPage" class="page">
-  <div class="card">
-    <h2>Generate Profile</h2>
-    <select id="gender">
-      <option value="">Select gender</option>
-      <option>Male</option>
-      <option>Female</option>
-    </select>
-    <button onclick="generate()">Generate</button>
+<!-- PROMO PAGE -->
+<div class="box hidden" id="promoPage">
+<h2>Enter Promo Code</h2>
+<input id="promoInput">
+<button onclick="checkPromo()">Enter</button>
+</div>
 
-    <div id="result"></div>
-  </div>
+<!-- MAIN PAGE -->
+<div class="box hidden" id="mainPage">
+<h2>Generate Account</h2>
+<select id="gender">
+  <option value="">Select Gender</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
+</select>
+<button onclick="generate()">Generate</button>
+<div id="result"></div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="box hidden" id="adminLogin">
+<h2>Admin Login</h2>
+<input type="password" id="adminPass" placeholder="Admin Password">
+<button onclick="adminLogin()">Login</button>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="box hidden" id="adminPanel">
+<h2>Admin Panel</h2>
+<h3>All Users</h3>
+<div id="userList"></div>
+<h3>Promo Codes</h3>
+<input id="newPromo" placeholder="New Promo Code">
+<button onclick="addPromo()">Add</button>
+<div id="promoList"></div>
 </div>
 
 <script>
-const loginPage = document.getElementById("loginPage");
-const signupPage = document.getElementById("signupPage");
-const promoPage = document.getElementById("promoPage");
-const resultBox = document.getElementById("result");
+/* ---------- NAV ---------- */
+const pages=document.querySelectorAll(".box");
+function show(p){pages.forEach(x=>x.classList.add("hidden"));p.classList.remove("hidden");history.pushState({p:p.id},"");}
+window.onpopstate=e=>{if(e.state)show(document.getElementById(e.state.p));}
+function toggleMenu(){menuBox.style.display=menuBox.style.display=="block"?"none":"block";}
 
-const used = JSON.parse(localStorage.getItem("usedProfiles")||"[]");
+/* ---------- PASSWORD TOGGLE ---------- */
+function togglePass(id){let x=document.getElementById(id);x.type=x.type=="password"?"text":"password";}
 
-function show(p){
-  document.querySelectorAll(".page").forEach(x=>x.style.display="none");
-  p.style.display="block";
-  history.pushState({}, "");
-}
-
-window.onpopstate = ()=>{};
-
-window.onload = ()=>{
-  if(localStorage.getItem("logged")==="1") show(promoPage);
-  else show(loginPage);
-};
-
-function togglePass(id){
-  const i=document.getElementById(id);
-  i.type = i.type==="password" ? "text" : "password";
-}
+/* ---------- USERS ---------- */
+let USERS=JSON.parse(localStorage.getItem("users")||"[]");
+if(localStorage.getItem("logged"))show(document.getElementById("promoPage"));
 
 function signup(){
-  const u=suUser.value, p=suPass.value;
-  if(!u||!p) return alert("Fill all");
-  localStorage.setItem("user",u);
-  localStorage.setItem("pass",p);
-  alert("Account created");
-  show(loginPage);
+ const f=fn.value.trim(), l=ln.value.trim(), p=sp.value.trim(), e=email.value.trim(), pw=spw.value.trim();
+ if(!f||!l||!p||!e||pw.length<6)return alert("Fill all fields & password>=6");
+ if(!/^(\+?\d{11,15})$/.test(p))return alert("Enter valid phone number");
+ if(!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(e))return alert("Email must be Gmail");
+ USERS.push({firstName:f,lastName:l,phone:p,password:pw,email:e});
+ localStorage.setItem("users",JSON.stringify(USERS));
+ alert("Account Created! Login now");
+ show(document.getElementById("loginPage"));
 }
 
 function login(){
-  if(loginUser.value===localStorage.getItem("user") &&
-     loginPass.value===localStorage.getItem("pass")){
-      localStorage.setItem("logged","1");
-      show(promoPage);
-  }else alert("Wrong password");
+ let u=USERS.find(x=>x.phone==loginPhone.value && x.password==loginPass.value);
+ if(!u)return alert("Wrong login");
+ localStorage.setItem("logged","1");
+show(document.getElementById("promoPage"));
 }
 
-function logout(){
-  localStorage.removeItem("logged");
-  show(loginPage);
-}
+/* ---------- PROMO ---------- */
+let PROMOS=JSON.parse(localStorage.getItem("promos")||"[]");
+function checkPromo(){if(PROMOS.includes(promoInput.value)){show(document.getElementById("mainPage"))}else alert("Invalid promo");}
 
-const data={
-Male:[
- {u:"jack_91",p:"Jk@2391",b:"Focused on goals. Living strong."},
- {u:"ryan_fx",p:"Rx!772",b:"Learning every day."}
-],
-Female:[
- {u:"luna_x",p:"Ln@778",b:"Dreamer. Creator."},
- {u:"ava_joy",p:"Av#992",b:"Peaceful mind, bold heart."}
-]
-};
-
+/* ---------- GENERATOR ---------- */
+let used=[];
+const maleNames=["Arif","Rahim","Hasan","Tanvir","Ahmed","Khan","Islam","Hossain"];
+const femaleNames=["Ayesha","Nusrat","Mim","Tania","Akter","Begum","Sultana"];
+const bioSamples=[
+"Focused on growth and learning every day to achieve personal and professional success.",
+"Building skills and creating value consistently in every opportunity that comes my way.",
+"Exploring opportunities with a positive mindset and striving to improve every day.",
+"Driven by passion and consistency, always aiming for long-term achievements.",
+"Learning, improving, and moving forward with dedication and discipline.",
+"Living a simple life with big goals and a vision to accomplish them.",
+"Working silently for long-term success while learning from every challenge.",
+"Progress over perfection, always prioritizing effort and continuous growth.",
+"Believing in discipline and effort, turning ideas into actionable results.",
+"Turning innovative ideas into actions that create impact and value daily."
+];
+function rnd(n){return Math.floor(Math.random()*n);}
+function genNum(len){let s="";while(s.length<len)s+=Math.floor(Math.random()*10);return s;}
 function generate(){
-  const g=gender.value;
-  if(!g) return alert("Select gender");
-
-  const list=data[g].filter(x=>!used.includes(x.u));
-  if(!list.length) return alert("No new profile left");
-
-  const x=list[Math.floor(Math.random()*list.length)];
-  used.push(x.u);
-  localStorage.setItem("usedProfiles",JSON.stringify(used));
-
-  resultBox.innerHTML=`
-    <div class="output">
-      <b>Username:</b> ${x.u}<br>
-      <b>Password:</b> ${x.p}<br>
-      <b>Bio:</b> ${x.b}
-      <button class="copy" onclick="copyText('${x.u}')">Copy Username</button>
-      <button class="copy" onclick="copyText('${x.p}')">Copy Password</button>
-      <button class="copy" onclick="copyText('${x.b}')">Copy Bio</button>
-    </div>`;
+ let g=gender.value;if(!g)return alert("Select gender");
+ let name=(g=="Male"?maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]:femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]);
+ if(used.includes(name))return generate();
+ used.push(name);
+ let user=name.replace(" ","").toLowerCase()+genNum(10);
+ let pass=genNum(10);
+ let bio=bioSamples[rnd(bioSamples.length)];
+ result.innerHTML=`<div class="account">
+Name: ${name}<br>
+Username: ${user} <button class="copy" onclick="copyText('${user}')">Copy</button><br>
+Password: ${pass} <button class="copy" onclick="copyText('${pass}')">Copy</button><br>
+Bio: ${bio} <button class="copy" onclick="copyText('${bio}')">Copy</button>
+</div>`;
 }
+function copyText(t){navigator.clipboard.writeText(t);}
 
-function copyText(t){
-  navigator.clipboard.writeText(t);
-  alert("Copied");
+/* ---------- PAGE SWITCH ---------- */
+function showSignup(){show(document.getElementById("signupPage"));}
+function showLogin(){show(document.getElementById("loginPage"));}
+
+/* ---------- ADMIN ---------- */
+function openAdmin(){show(document.getElementById("adminLogin"));}
+function adminLogin(){
+ if(adminPass.value=="@123456@"){
+  show(document.getElementById("adminPanel"));
+  renderUsers();
+  renderPromo();
+ } else alert("Wrong admin password");
+}
+function renderUsers(){
+ const div=document.getElementById("userList"); div.innerHTML="";
+ USERS.forEach(u=>{
+  let d=document.createElement("div");
+  d.className="account";
+  d.innerHTML=`Name: ${u.firstName} ${u.lastName}<br>
+Phone: ${u.phone}<br>
+Email: ${u.email}<br>
+Password: ${u.password}`;
+  div.appendChild(d);
+ });
+}
+function addPromo(){
+ if(newPromo.value.trim()=="")return;
+ PROMOS.push(newPromo.value.trim());
+ localStorage.setItem("promos",JSON.stringify(PROMOS));
+ newPromo.value="";
+ renderPromo();
+}
+function renderPromo(){
+ const div=document.getElementById("promoList"); div.innerHTML="";
+ PROMOS.forEach((p,i)=>{
+  let d=document.createElement("div");
+  d.textContent=p+" ";
+  let del=document.createElement("button");
+  del.textContent="Delete";
+  del.onclick=()=>{PROMOS.splice(i,1);localStorage.setItem("promos",JSON.stringify(PROMOS));renderPromo();}
+  d.appendChild(del);
+  div.appendChild(d);
+ });
 }
 </script>
 
