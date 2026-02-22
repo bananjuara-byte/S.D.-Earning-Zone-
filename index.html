@@ -1,156 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
+<title>Premium Account Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.D. Earning Zone</title>
 
 <style>
 body{
 margin:0;
 font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0f0f0f,#1e293b);
-color:#fff;
-overflow:hidden;
-}
-
-/* LOADER */
-#loader{
-position:fixed;
-width:100%;
-height:100%;
-background:#000;
+background:linear-gradient(135deg,#0f172a,#020617);
+color:white;
 display:flex;
 justify-content:center;
 align-items:center;
-z-index:9999;
-flex-direction:column;
-animation:fadeOut 1s ease forwards;
-animation-delay:2s;
+height:100vh;
+overflow:hidden;
 }
 
-.logo{
-font-size:32px;
-font-weight:bold;
-background:linear-gradient(90deg,#10b981,#22d3ee);
--webkit-background-clip:text;
-color:transparent;
-animation:zoomIn 1.5s ease;
-}
-
-.tagline{
-font-size:14px;
-opacity:0.7;
-margin-top:10px;
-animation:fadeIn 2s ease;
-}
-
-@keyframes zoomIn{
-0%{transform:scale(0.5);opacity:0;}
-100%{transform:scale(1);opacity:1;}
+.container{
+width:95%;
+max-width:900px;
+padding:20px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border-radius:20px;
+box-shadow:0 0 40px rgba(16,185,129,0.5);
+animation:fadeIn 1s ease forwards;
 }
 
 @keyframes fadeIn{
-0%{opacity:0;}
-100%{opacity:0.7;}
+from{opacity:0;transform:scale(0.9);}
+to{opacity:1;transform:scale(1);}
 }
 
-@keyframes fadeOut{
-to{opacity:0;visibility:hidden;}
-}
-
-/* MAIN BOX */
-.box{
-max-width:600px;
-margin:100px auto;
-padding:30px;
-border-radius:20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(20px);
-box-shadow:0 0 40px rgba(0,255,200,0.2);
-animation:slideUp 1s ease;
-}
-
-@keyframes slideUp{
-0%{transform:translateY(50px);opacity:0;}
-100%{transform:translateY(0);opacity:1;}
-}
-
-h2{
+h1{
 text-align:center;
-background:linear-gradient(90deg,#10b981,#22d3ee);
--webkit-background-clip:text;
-color:transparent;
+margin-bottom:20px;
+color:#10b981;
 }
 
 select,button{
-width:100%;
 padding:12px;
-margin:10px 0;
 border:none;
 border-radius:10px;
-font-size:15px;
+font-size:16px;
+margin:5px 0;
+width:100%;
 }
 
 select{
-background:#1f2937;
-color:#fff;
+background:#111827;
+color:white;
 }
 
 button{
-background:linear-gradient(90deg,#10b981,#22d3ee);
-color:#000;
-font-weight:bold;
+background:#10b981;
+color:white;
 cursor:pointer;
 transition:0.3s;
 }
 
 button:hover{
+background:#059669;
 transform:scale(1.05);
-box-shadow:0 0 20px rgba(34,211,238,0.7);
+}
+
+#result{
+margin-top:25px;
+display:flex;
+gap:20px;
+flex-wrap:wrap;
 }
 
 .account{
 background:#111827;
-padding:15px;
-margin-top:15px;
-border-radius:12px;
-animation:fadeResult 0.6s ease;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 20px #10b981;
+min-height:180px;
+white-space:pre-line;
+font-family:monospace;
+font-size:15px;
+}
+img{
+width:200px;
+border-radius:20px;
+box-shadow:0 0 25px #10b981;
+animation:imgFade 0.8s ease;
 }
 
-@keyframes fadeResult{
-0%{opacity:0;transform:translateY(20px);}
-100%{opacity:1;transform:translateY(0);}
-}
-
-.copy{
-background:#facc15;
-color:#000;
-margin-left:5px;
-padding:4px 8px;
-border-radius:6px;
-cursor:pointer;
-}
-
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
+@keyframes imgFade{
+from{opacity:0;transform:scale(0.8);}
+to{opacity:1;transform:scale(1);}
 }
 </style>
 </head>
+
 <body>
 
-<canvas id="bg"></canvas>
-
-<div id="loader">
-<div class="logo">S.D. Earning Zone</div>
-<div class="tagline">Premium Account Generator</div>
-</div>
-
-<div class="box" id="mainPage">
-<h2>Generate Account</h2>
+<div class="container">
+<h1>Premium Account Generator</h1>
 
 <select id="gender">
 <option value="">Select Gender</option>
@@ -165,56 +114,25 @@ z-index:-1;
 
 <script>
 
-/* PARTICLE BACKGROUND */
-const canvas=document.getElementById("bg");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let particles=[];
-for(let i=0;i<80;i++){
-particles.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*2,
-dx:(Math.random()-0.5),
-dy:(Math.random()-0.5)
-});
-}
-
-function animate(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-particles.forEach(p=>{
-ctx.beginPath();
-ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-ctx.fillStyle="#10b981";
-ctx.fill();
-p.x+=p.dx;
-p.y+=p.dy;
-if(p.x<0||p.x>canvas.width)p.dx*=-1;
-if(p.y<0||p.y>canvas.height)p.dy*=-1;
-});
-requestAnimationFrame(animate);
-}
-animate();
-
-/* GENERATOR */
-const maleNames=["Arif","Rahim","Hasan","Tanvir","Ahmed","Khan","Islam","Hossain"];
-const femaleNames=["Ayesha","Nusrat","Mim","Tania","Akter","Begum","Sultana"];
-const bioSamples=[
-"Focused on growth and learning every day.",
-"Driven by passion and long-term success.",
-"Building skills and creating value.",
-"Exploring opportunities with positivity.",
-"Turning ideas into real achievements."
+let maleNames=["James","Michael","David","John","Robert","Daniel","Chris","Alex","Ryan","Ethan"];
+let femaleNames=["Emma","Olivia","Sophia","Ava","Mia","Isabella","Emily","Charlotte","Amelia","Harper"];
+let bioSamples=[
+"Dream big. Work hard.",
+"Living my best life.",
+"Stay humble, hustle hard.",
+"Creating my own sunshine.",
+"Digital explorer."
 ];
 
-function rnd(n){return Math.floor(Math.random()*n);}
-function genNum(len){let s="";while(s.length<len)s+=Math.floor(Math.random()*10);return s;}
+let gender=document.getElementById("gender");
+let result=document.getElementById("result");
+
+function rnd(max){return Math.floor(Math.random()*max);}
+function genNum(n){return Math.floor(Math.random()*Math.pow(10,n));}
 
 function generate(){
 let g=gender.value;
-if(!g)return alert("Select gender");
+if(!g){alert("Select gender");return;}
 
 let name=(g=="Male"?
 maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]:
@@ -225,26 +143,48 @@ let user=name.replace(" ","").toLowerCase()+genNum(6);
 let pass=Math.random().toString(36).slice(-8)+"#"+genNum(2);
 let bio=bioSamples[rnd(bioSamples.length)];
 
+let avatarUrl=`https://api.dicebear.com/7.x/adventurer/png?seed=${user}&gender=${g=="Male"?"male":"female"}`;
+
 result.innerHTML=`
+<div style="flex:1;min-width:220px;text-align:center;">
+<img src="${avatarUrl}">
+<br><br>
+<a href="${avatarUrl}" download="profile.png">
+<button>Download Image</button>
+</a>
+</div>
+
+<div style="flex:1;min-width:250px;">
 <div class="account">
-Name: ${name}<br>
-Username: ${user} <span class="copy" onclick="copyText('${user}')">Copy</span><br>
-Password: ${pass} <span class="copy" onclick="copyText('${pass}')">Copy</span><br>
-Bio: ${bio} <span class="copy" onclick="copyText('${bio}')">Copy</span>
-</div>`;
+<span id="typed"></span>
+</div>
+</div>
+`;
+
+let text=`Name: ${name}
+Username: ${user}
+Password: ${pass}
+Bio: ${bio}`;
+
+typeWriter(text);
 }
 
-function copyText(t){
-navigator.clipboard.writeText(t);
+function typeWriter(text){
+let i=0;
+let speed=25;
+let box=document.getElementById("typed");
+box.innerHTML="";
+function typing(){
+if(i<text.length){
+box.innerHTML+=text.charAt(i);
+i++;
+setTimeout(typing,speed);
 }
-
-window.onload=function(){
-setTimeout(()=>{
-document.getElementById("loader").style.display="none";
-document.body.style.overflow="auto";
-},2000);
-};
+}
+typing();
+}
 
 </script>
+
 </body>
-  </html>
+</html>
