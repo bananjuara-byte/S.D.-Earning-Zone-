@@ -4,202 +4,247 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>S.D. Earning Zone</title>
+
 <style>
-body{margin:0;font-family:Arial;background:#121212;color:#fff;}
-.box{max-width:600px;margin:30px auto;padding:20px;border-radius:10px;background:#1f1f1f;}
-input,button,select{width:100%;padding:12px;margin:8px 0;border:none;border-radius:6px;}
-button{background:#10b981;color:#fff;font-weight:bold;cursor:pointer;}
-.hidden{display:none;}
-.account{background:#2b2b2b;padding:15px;margin-top:10px;border-radius:8px;}
-.copy{background:#facc15;color:#000;margin-left:5px;}
-.menu{position:fixed;top:10px;right:10px;font-size:26px;cursor:pointer;color:#FFD700;}
-.menuBox{position:fixed;top:50px;right:10px;background:#000;padding:10px;display:none;}
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f0f0f,#1e293b);
+color:#fff;
+overflow:hidden;
+}
+
+/* LOADER */
+#loader{
+position:fixed;
+width:100%;
+height:100%;
+background:#000;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+flex-direction:column;
+animation:fadeOut 1s ease forwards;
+animation-delay:2s;
+}
+
+.logo{
+font-size:32px;
+font-weight:bold;
+background:linear-gradient(90deg,#10b981,#22d3ee);
+-webkit-background-clip:text;
+color:transparent;
+animation:zoomIn 1.5s ease;
+}
+
+.tagline{
+font-size:14px;
+opacity:0.7;
+margin-top:10px;
+animation:fadeIn 2s ease;
+}
+
+@keyframes zoomIn{
+0%{transform:scale(0.5);opacity:0;}
+100%{transform:scale(1);opacity:1;}
+}
+
+@keyframes fadeIn{
+0%{opacity:0;}
+100%{opacity:0.7;}
+}
+
+@keyframes fadeOut{
+to{opacity:0;visibility:hidden;}
+}
+
+/* MAIN BOX */
+.box{
+max-width:600px;
+margin:100px auto;
+padding:30px;
+border-radius:20px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
+box-shadow:0 0 40px rgba(0,255,200,0.2);
+animation:slideUp 1s ease;
+}
+
+@keyframes slideUp{
+0%{transform:translateY(50px);opacity:0;}
+100%{transform:translateY(0);opacity:1;}
+}
+
+h2{
+text-align:center;
+background:linear-gradient(90deg,#10b981,#22d3ee);
+-webkit-background-clip:text;
+color:transparent;
+}
+
+select,button{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:10px;
+font-size:15px;
+}
+
+select{
+background:#1f2937;
+color:#fff;
+}
+
+button{
+background:linear-gradient(90deg,#10b981,#22d3ee);
+color:#000;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px rgba(34,211,238,0.7);
+}
+
+.account{
+background:#111827;
+padding:15px;
+margin-top:15px;
+border-radius:12px;
+animation:fadeResult 0.6s ease;
+}
+
+@keyframes fadeResult{
+0%{opacity:0;transform:translateY(20px);}
+100%{opacity:1;transform:translateY(0);}
+}
+
+.copy{
+background:#facc15;
+color:#000;
+margin-left:5px;
+padding:4px 8px;
+border-radius:6px;
+cursor:pointer;
+}
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
 </style>
 </head>
 <body>
 
-<!-- MENU -->
-<div class="menu" onclick="toggleMenu()">⋮</div>
-<div class="menuBox" id="menuBox">
-  <button onclick="openAdmin()">Admin Panel</button>
+<canvas id="bg"></canvas>
+
+<div id="loader">
+<div class="logo">S.D. Earning Zone</div>
+<div class="tagline">Premium Account Generator</div>
 </div>
 
-<!-- LOGIN PAGE -->
-<div class="box" id="loginPage">
-<h2>Login</h2>
-<input id="loginPhone" placeholder="Phone">
-<input type="password" id="loginPass" placeholder="Password">
-<button onclick="togglePass('loginPass')">👁 Show / Hide</button>
-<button onclick="login()">Login</button>
-<p onclick="showSignup()" style="text-align:center;cursor:pointer;">Create New Account</p>
-</div>
-
-<!-- SIGNUP PAGE -->
-<div class="box hidden" id="signupPage">
-<h2>Create Account</h2>
-<input id="fn" placeholder="First Name">
-<input id="ln" placeholder="Last Name">
-<input id="sp" placeholder="Phone">
-<input id="email" placeholder="Email (must be Gmail)">
-<input type="password" id="spw" placeholder="Password (6+)">
-<button onclick="togglePass('spw')">👁 Show / Hide</button>
-<button onclick="signup()">Sign Up</button>
-<p onclick="showLogin()" style="text-align:center;cursor:pointer;">Already have account? Login</p>
-</div>
-
-<!-- PROMO PAGE -->
-<div class="box hidden" id="promoPage">
-<h2>Enter Promo Code</h2>
-<input id="promoInput">
-<button onclick="checkPromo()">Enter</button>
-</div>
-
-<!-- MAIN PAGE -->
-<div class="box hidden" id="mainPage">
+<div class="box" id="mainPage">
 <h2>Generate Account</h2>
+
 <select id="gender">
-  <option value="">Select Gender</option>
-  <option value="Male">Male</option>
-  <option value="Female">Female</option>
+<option value="">Select Gender</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
 </select>
+
 <button onclick="generate()">Generate</button>
+
 <div id="result"></div>
 </div>
 
-<!-- ADMIN LOGIN -->
-<div class="box hidden" id="adminLogin">
-<h2>Admin Login</h2>
-<input type="password" id="adminPass" placeholder="Admin Password">
-<button onclick="adminLogin()">Login</button>
-</div>
-
-<!-- ADMIN PANEL -->
-<div class="box hidden" id="adminPanel">
-<h2>Admin Panel</h2>
-<h3>All Users</h3>
-<div id="userList"></div>
-<h3>Promo Codes</h3>
-<input id="newPromo" placeholder="New Promo Code">
-<button onclick="addPromo()">Add</button>
-<div id="promoList"></div>
-</div>
-
 <script>
-/* ---------- NAV ---------- */
-const pages=document.querySelectorAll(".box");
-function show(p){pages.forEach(x=>x.classList.add("hidden"));p.classList.remove("hidden");history.pushState({p:p.id},"");}
-window.onpopstate=e=>{if(e.state)show(document.getElementById(e.state.p));}
-function toggleMenu(){menuBox.style.display=menuBox.style.display=="block"?"none":"block";}
 
-/* ---------- PASSWORD TOGGLE ---------- */
-function togglePass(id){let x=document.getElementById(id);x.type=x.type=="password"?"text":"password";}
+/* PARTICLE BACKGROUND */
+const canvas=document.getElementById("bg");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-/* ---------- USERS ---------- */
-let USERS=JSON.parse(localStorage.getItem("users")||"[]");
-if(localStorage.getItem("logged"))show(document.getElementById("promoPage"));
-
-function signup(){
- const f=fn.value.trim(), l=ln.value.trim(), p=sp.value.trim(), e=email.value.trim(), pw=spw.value.trim();
- if(!f||!l||!p||!e||pw.length<6)return alert("Fill all fields & password>=6");
- if(!/^(\+?\d{11,15})$/.test(p))return alert("Enter valid phone number");
- if(!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(e))return alert("Email must be Gmail");
- USERS.push({firstName:f,lastName:l,phone:p,password:pw,email:e});
- localStorage.setItem("users",JSON.stringify(USERS));
- alert("Account Created! Login now");
- show(document.getElementById("loginPage"));
+let particles=[];
+for(let i=0;i<80;i++){
+particles.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2,
+dx:(Math.random()-0.5),
+dy:(Math.random()-0.5)
+});
 }
 
-function login(){
- let u=USERS.find(x=>x.phone==loginPhone.value && x.password==loginPass.value);
- if(!u)return alert("Wrong login");
- localStorage.setItem("logged","1");
-show(document.getElementById("promoPage"));
+function animate(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+particles.forEach(p=>{
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fillStyle="#10b981";
+ctx.fill();
+p.x+=p.dx;
+p.y+=p.dy;
+if(p.x<0||p.x>canvas.width)p.dx*=-1;
+if(p.y<0||p.y>canvas.height)p.dy*=-1;
+});
+requestAnimationFrame(animate);
 }
+animate();
 
-/* ---------- PROMO ---------- */
-let PROMOS=JSON.parse(localStorage.getItem("promos")||"[]");
-function checkPromo(){if(PROMOS.includes(promoInput.value)){show(document.getElementById("mainPage"))}else alert("Invalid promo");}
-
-/* ---------- GENERATOR ---------- */
-let used=[];
+/* GENERATOR */
 const maleNames=["Arif","Rahim","Hasan","Tanvir","Ahmed","Khan","Islam","Hossain"];
 const femaleNames=["Ayesha","Nusrat","Mim","Tania","Akter","Begum","Sultana"];
 const bioSamples=[
-"Focused on growth and learning every day to achieve personal and professional success.",
-"Building skills and creating value consistently in every opportunity that comes my way.",
-"Exploring opportunities with a positive mindset and striving to improve every day.",
-"Driven by passion and consistency, always aiming for long-term achievements.",
-"Learning, improving, and moving forward with dedication and discipline.",
-"Living a simple life with big goals and a vision to accomplish them.",
-"Working silently for long-term success while learning from every challenge.",
-"Progress over perfection, always prioritizing effort and continuous growth.",
-"Believing in discipline and effort, turning ideas into actionable results.",
-"Turning innovative ideas into actions that create impact and value daily."
+"Focused on growth and learning every day.",
+"Driven by passion and long-term success.",
+"Building skills and creating value.",
+"Exploring opportunities with positivity.",
+"Turning ideas into real achievements."
 ];
+
 function rnd(n){return Math.floor(Math.random()*n);}
 function genNum(len){let s="";while(s.length<len)s+=Math.floor(Math.random()*10);return s;}
+
 function generate(){
- let g=gender.value;if(!g)return alert("Select gender");
- let name=(g=="Male"?maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]:femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]);
- if(used.includes(name))return generate();
- used.push(name);
- let user=name.replace(" ","").toLowerCase()+genNum(10);
- let pass=genNum(10);
- let bio=bioSamples[rnd(bioSamples.length)];
- result.innerHTML=`<div class="account">
+let g=gender.value;
+if(!g)return alert("Select gender");
+
+let name=(g=="Male"?
+maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]:
+femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]
+);
+
+let user=name.replace(" ","").toLowerCase()+genNum(6);
+let pass=Math.random().toString(36).slice(-8)+"#"+genNum(2);
+let bio=bioSamples[rnd(bioSamples.length)];
+
+result.innerHTML=`
+<div class="account">
 Name: ${name}<br>
-Username: ${user} <button class="copy" onclick="copyText('${user}')">Copy</button><br>
-Password: ${pass} <button class="copy" onclick="copyText('${pass}')">Copy</button><br>
-Bio: ${bio} <button class="copy" onclick="copyText('${bio}')">Copy</button>
+Username: ${user} <span class="copy" onclick="copyText('${user}')">Copy</span><br>
+Password: ${pass} <span class="copy" onclick="copyText('${pass}')">Copy</span><br>
+Bio: ${bio} <span class="copy" onclick="copyText('${bio}')">Copy</span>
 </div>`;
 }
-function copyText(t){navigator.clipboard.writeText(t);}
 
-/* ---------- PAGE SWITCH ---------- */
-function showSignup(){show(document.getElementById("signupPage"));}
-function showLogin(){show(document.getElementById("loginPage"));}
+function copyText(t){
+navigator.clipboard.writeText(t);
+}
 
-/* ---------- ADMIN ---------- */
-function openAdmin(){show(document.getElementById("adminLogin"));}
-function adminLogin(){
- if(adminPass.value=="@123456@"){
-  show(document.getElementById("adminPanel"));
-  renderUsers();
-  renderPromo();
- } else alert("Wrong admin password");
-}
-function renderUsers(){
- const div=document.getElementById("userList"); div.innerHTML="";
- USERS.forEach(u=>{
-  let d=document.createElement("div");
-  d.className="account";
-  d.innerHTML=`Name: ${u.firstName} ${u.lastName}<br>
-Phone: ${u.phone}<br>
-Email: ${u.email}<br>
-Password: ${u.password}`;
-  div.appendChild(d);
- });
-}
-function addPromo(){
- if(newPromo.value.trim()=="")return;
- PROMOS.push(newPromo.value.trim());
- localStorage.setItem("promos",JSON.stringify(PROMOS));
- newPromo.value="";
- renderPromo();
-}
-function renderPromo(){
- const div=document.getElementById("promoList"); div.innerHTML="";
- PROMOS.forEach((p,i)=>{
-  let d=document.createElement("div");
-  d.textContent=p+" ";
-  let del=document.createElement("button");
-  del.textContent="Delete";
-  del.onclick=()=>{PROMOS.splice(i,1);localStorage.setItem("promos",JSON.stringify(PROMOS));renderPromo();}
-  d.appendChild(del);
-  div.appendChild(d);
- });
-}
+window.onload=function(){
+setTimeout(()=>{
+document.getElementById("loader").style.display="none";
+document.body.style.overflow="auto";
+},2000);
+};
+
 </script>
-
 </body>
-</html>
+  </html>
