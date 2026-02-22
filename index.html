@@ -1,189 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Premium Account Generator</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>Premium Generator</title>
 <style>
-body{
-margin:0;
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0f172a,#020617);
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-overflow:hidden;
+body {
+  margin:0; font-family:Arial; background:#121212; color:#fff; overflow-x:hidden;
+  display:flex; justify-content:center; align-items:center; height:100vh;
 }
-
 .container{
-width:95%;
-max-width:900px;
-padding:20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(15px);
-border-radius:20px;
-box-shadow:0 0 40px rgba(16,185,129,0.5);
-animation:fadeIn 1s ease forwards;
+  max-width:800px; width:90%; padding:20px; border-radius:15px;
+  background: rgba(0,0,0,0.3); backdrop-filter: blur(15px);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05);
+  text-align:center;
+  position:relative;
 }
-
-@keyframes fadeIn{
-from{opacity:0;transform:scale(0.9);}
-to{opacity:1;transform:scale(1);}
-}
-
-h1{
-text-align:center;
-margin-bottom:20px;
-color:#10b981;
-}
-
-select,button{
-padding:12px;
-border:none;
-border-radius:10px;
-font-size:16px;
-margin:5px 0;
-width:100%;
-}
-
-select{
-background:#111827;
-color:white;
-}
-
-button{
-background:#10b981;
-color:white;
-cursor:pointer;
-transition:0.3s;
-}
-
-button:hover{
-background:#059669;
-transform:scale(1.05);
-}
-
-#result{
-margin-top:25px;
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-}
-
-.account{
-background:#111827;
-padding:20px;
-border-radius:15px;
-box-shadow:0 0 20px #10b981;
-min-height:180px;
-white-space:pre-line;
-font-family:monospace;
-font-size:15px;
-}
-img{
-width:200px;
-border-radius:20px;
-box-shadow:0 0 25px #10b981;
-animation:imgFade 0.8s ease;
-}
-
-@keyframes imgFade{
-from{opacity:0;transform:scale(0.8);}
-to{opacity:1;transform:scale(1);}
-}
+input, select, button{padding:12px; margin:8px 0; border-radius:8px; border:none; width:100%;}
+button{background:#10b981; color:#fff; font-weight:bold; cursor:pointer;}
+.account{background:rgba(255,255,255,0.05); padding:15px; margin-top:20px; border-radius:10px; text-align:left;}
+.copy, .download{margin-top:5px; background:#facc15; color:#000; cursor:pointer; border:none; padding:5px 10px; border-radius:6px;}
+img{border-radius:10px; max-width:200px; height:auto; display:block; margin:0 auto 10px;}
+.flex{display:flex; gap:20px; flex-wrap:wrap; justify-content:center; align-items:flex-start;}
 </style>
 </head>
-
 <body>
 
 <div class="container">
-<h1>Premium Account Generator</h1>
-
+<h2>Generate Random User</h2>
 <select id="gender">
-<option value="">Select Gender</option>
-<option value="Male">Male</option>
-<option value="Female">Female</option>
+  <option value="">Select Gender</option>
+  <option value="Male">Male</option>
+  <option value="Female">Female</option>
 </select>
-
 <button onclick="generate()">Generate</button>
 
 <div id="result"></div>
 </div>
 
 <script>
-
-let maleNames=["James","Michael","David","John","Robert","Daniel","Chris","Alex","Ryan","Ethan"];
-let femaleNames=["Emma","Olivia","Sophia","Ava","Mia","Isabella","Emily","Charlotte","Amelia","Harper"];
-let bioSamples=[
-"Dream big. Work hard.",
-"Living my best life.",
-"Stay humble, hustle hard.",
-"Creating my own sunshine.",
-"Digital explorer."
+// ---------- NAMES & BIO ----------
+const maleNames=["Liam","Noah","Oliver","Elijah","James","William","Benjamin","Lucas"];
+const femaleNames=["Olivia","Emma","Ava","Sophia","Isabella","Mia","Amelia","Harper"];
+const bioSamples=[
+"Focused on growth and learning every day to achieve personal and professional success.",
+"Building skills and creating value consistently in every opportunity that comes my way.",
+"Exploring opportunities with a positive mindset and striving to improve every day.",
+"Driven by passion and consistency, always aiming for long-term achievements.",
+"Learning, improving, and moving forward with dedication and discipline.",
+"Living a simple life with big goals and a vision to accomplish them.",
+"Working silently for long-term success while learning from every challenge.",
+"Progress over perfection, always prioritizing effort and continuous growth.",
+"Believing in discipline and effort, turning ideas into actionable results.",
+"Turning innovative ideas into actions that create impact and value daily."
 ];
+let used=[];
 
-let gender=document.getElementById("gender");
-let result=document.getElementById("result");
+// ---------- UTILITY ----------
+function rnd(n){return Math.floor(Math.random()*n);}
+function genNum(len){let s="";while(s.length<len)s+=Math.floor(Math.random()*10);return s;}
 
-function rnd(max){return Math.floor(Math.random()*max);}
-function genNum(n){return Math.floor(Math.random()*Math.pow(10,n));}
-
+// ---------- GENERATE ----------
 function generate(){
-let g=gender.value;
-if(!g){alert("Select gender");return;}
+  let g=document.getElementById("gender").value;
+  if(!g) return alert("Select gender");
+  let full=(g=="Male"?maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]
+                      :femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]);
+  if(used.includes(full)) return generate();
+  used.push(full);
+  let username=full.replace(" ","").toLowerCase()+genNum(10);
+  let password=genNum(10);
+  let bio=bioSamples[rnd(bioSamples.length)];
+  let imgUrl="https://thispersondoesnotexist.com/image";
 
-let name=(g=="Male"?
-maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]:
-femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]
-);
+  document.getElementById("result").innerHTML = `
+  <div class="flex">
+    <div>
+      <img src="${imgUrl}" alt="Profile Image">
+      <button class="download" onclick="downloadImage('${imgUrl}')">Download Image</button>
+    </div>
+    <div class="account">
+      Name: ${full}<br>
+      Username: ${username}<br>
+      Password: ${password}<br>
+      Bio: ${bio}<br><br>
+      <button class="copy" onclick="copyAll('${full}','${username}','${password}','${bio}')">Copy All</button>
+    </div>
+  </div>`;
+}
 
-let user=name.replace(" ","").toLowerCase()+genNum(6);
-let pass=Math.random().toString(36).slice(-8)+"#"+genNum(2);
-let bio=bioSamples[rnd(bioSamples.length)];
+// ---------- COPY & DOWNLOAD ----------
+function copyAll(name, username, password, bio){
+  navigator.clipboard.writeText(name);
+  navigator.clipboard.writeText(username);
+  navigator.clipboard.writeText(password);
+  navigator.clipboard.writeText(bio);
+  alert("All copied individually!");
+}
 
-let avatarUrl=`https://api.dicebear.com/7.x/adventurer/png?seed=${user}&gender=${g=="Male"?"male":"female"}`;
+function downloadImage(url){
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="profile.jpg";
+  link.click();
+}
 
-result.innerHTML=`
-<div style="flex:1;min-width:220px;text-align:center;">
-<img src="${avatarUrl}">
-<br><br>
-<a href="${avatarUrl}" download="profile.png">
-<button>Download Image</button>
-</a>
-</div>
+// ---------- NEON PARTICLES ----------
+const container=document.querySelector(".container");
+for(let i=0;i<30;i++){
+  let p=document.createElement("div");
+  p.style.position="absolute";
+  p.style.width="8px";
+  p.style.height="8px";
+  p.style.borderRadius="50%";
+  p.style.background="rgba(0,255,255,0.6)";
+  p.style.top=Math.random()*100+"%";
+  p.style.left=Math.random()*100+"%";
+  p.style.animation=`move${i%5} ${2+Math.random()*3}s infinite alternate`;
+  container.appendChild(p);
+}
 
-<div style="flex:1;min-width:250px;">
-<div class="account">
-<span id="typed"></span>
-</div>
-</div>
+const style=document.createElement("style");
+style.innerHTML=`
+@keyframes move0{0%{transform:translateY(0);}100%{transform:translateY(-20px);}}
+@keyframes move1{0%{transform:translateY(0);}100%{transform:translateY(20px);}}
+@keyframes move2{0%{transform:translateX(0);}100%{transform:translateX(20px);}}
+@keyframes move3{0%{transform:translateX(0);}100%{transform:translateX(-20px);}}
+@keyframes move4{0%{transform:translateY(0) translateX(0);}100%{transform:translateY(-15px) translateX(15px);}}
 `;
-
-let text=`Name: ${name}
-Username: ${user}
-Password: ${pass}
-Bio: ${bio}`;
-
-typeWriter(text);
-}
-
-function typeWriter(text){
-let i=0;
-let speed=25;
-let box=document.getElementById("typed");
-box.innerHTML="";
-function typing(){
-if(i<text.length){
-box.innerHTML+=text.charAt(i);
-i++;
-setTimeout(typing,speed);
-}
-}
-typing();
-}
-
+document.head.appendChild(style);
 </script>
 
 </body>
