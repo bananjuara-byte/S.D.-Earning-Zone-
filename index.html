@@ -3,133 +3,358 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premium Generator</title>
+<title>Earning Zone By Siddik</title>
+
 <style>
-body {
-  margin:0; font-family:Arial; background:#121212; color:#fff; overflow-x:hidden;
-  display:flex; justify-content:center; align-items:center; height:100vh;
+
+body{
+margin:0;
+font-family:Arial;
+background:#121212;
+color:#fff;
 }
+
+.page{
+display:none;
+padding:20px;
+max-width:900px;
+margin:auto;
+}
+
+.active{
+display:block;
+}
+
+.title{
+text-align:center;
+font-size:32px;
+font-weight:bold;
+margin-top:30px;
+}
+
+.box{
+background:#1f1f1f;
+padding:18px;
+margin:15px 0;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
+font-size:18px;
+}
+
+.box:hover{
+background:#333;
+}
+
+button{
+padding:12px;
+border:none;
+border-radius:8px;
+background:#10b981;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.back{
+margin-bottom:20px;
+}
+
+/* fake id generator style */
+
 .container{
-  max-width:800px; width:90%; padding:20px; border-radius:15px;
-  background: rgba(0,0,0,0.3); backdrop-filter: blur(15px);
-  box-shadow: 0 0 30px rgba(255,255,255,0.05);
-  text-align:center;
-  position:relative;
+max-width:800px;
+width:90%;
+margin:auto;
+padding:20px;
+border-radius:15px;
+background: rgba(0,0,0,0.3);
+backdrop-filter: blur(15px);
+box-shadow: 0 0 30px rgba(255,255,255,0.05);
+text-align:center;
+position:relative;
 }
-input, select, button{padding:12px; margin:8px 0; border-radius:8px; border:none; width:100%;}
-button{background:#10b981; color:#fff; font-weight:bold; cursor:pointer;}
-.account{background:rgba(255,255,255,0.05); padding:15px; margin-top:20px; border-radius:10px; text-align:left;}
-.copy, .download{margin-top:5px; background:#facc15; color:#000; cursor:pointer; border:none; padding:5px 10px; border-radius:6px;}
-img{border-radius:10px; max-width:200px; height:auto; display:block; margin:0 auto 10px;}
-.flex{display:flex; gap:20px; flex-wrap:wrap; justify-content:center; align-items:flex-start;}
+
+input, select{
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+border:none;
+width:100%;
+}
+
+.account{
+background:rgba(255,255,255,0.05);
+padding:15px;
+margin-top:20px;
+border-radius:10px;
+text-align:left;
+}
+
+.copy,.download{
+margin-top:5px;
+background:#facc15;
+color:#000;
+border:none;
+padding:5px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+img{
+border-radius:10px;
+max-width:200px;
+display:block;
+margin:auto;
+}
+
+.flex{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.offer{
+text-align:center;
+font-weight:bold;
+color:black;
+background:#fff;
+padding:10px;
+border-radius:8px;
+}
+
 </style>
 </head>
 <body>
 
+<!-- HOME PAGE -->
+
+<div class="page active" id="home">
+
+<div class="title">Earning Zone By Siddik</div>
+
+<div class="box" onclick="openPage('income')">Online Income</div>
+<div class="box" onclick="openPage('generator')">Fake ID Generate</div>
+<div class="box" onclick="openPage('support')">Support</div>
+
+</div>
+
+
+
+<!-- ONLINE INCOME PAGE -->
+
+<div class="page" id="income">
+
+<button class="back" onclick="openPage('home')">Back</button>
+
+<div class="box" onclick="openPage('niva')">Niva Coin Job</div>
+
+</div>
+
+
+
+<!-- NIVA PAGE -->
+<div class="page" id="niva">
+
+<button class="back" onclick="openPage('income')">Back</button>
+
+<div class="box" onclick="openLink('VIDEO1_LINK')">
+কাজ করার জন্য কিভাবে একাউন্ট করবেন দেখতে Video 1 এ ক্লিক করুন
+</div>
+
+<!-- NEW APP DOWNLOAD BOX -->
+<div class="box" style="font-size:16px;background:#0f172a;" onclick="openLink('https://topfollow-apk.org/nivafollower/')">
+Niva Follower App
+</div>
+
+<div class="box" onclick="openLink('VIDEO2_LINK')">
+কিভাবে ইনকাম শুরু করবেন সেটি দেখতে Video 2 এ ক্লিক করুন
+</div>
+
+<div class="box" onclick="openLink('VIDEO3_LINK')">
+কিভাবে Niva Follower Coin সেল দিয়ে নগদ/বিকাশ/রকেট এ টাকা নিবেন নিচের ভিডিও টি দেখুন
+</div>
+
+<div class="offer">
+আজকের স্পেশাল অফার ⭐<br>
+মাত্র ১০,০০০ কয়েন = ৩০ টাকা<br>
+সেল টাইম : বিকাল ৩:০০টা — রাত ১১:০০টা
+</div>
+
+<div class="box" onclick="openLink('WHATSAPP_LINK')">
+কয়েন সেল করুন
+</div>
+
+</div>
+
+
+
+<!-- SUPPORT PAGE -->
+
+<div class="page" id="support">
+
+<button class="back" onclick="openPage('home')">Back</button>
+
+<div class="box" onclick="openLink('TELEGRAM_LINK')">
+Telegram Support
+</div>
+
+<div class="box" onclick="openLink('WHATSAPP_LINK')">
+WhatsApp Support
+</div>
+
+</div>
+
+
+
+<!-- FAKE ID GENERATOR PAGE -->
+
+<div class="page" id="generator">
+
+<button class="back" onclick="openPage('home')">Back</button>
+
 <div class="container">
+
 <h2>Generate Random User</h2>
+
 <select id="gender">
-  <option value="">Select Gender</option>
-  <option value="Male">Male</option>
-  <option value="Female">Female</option>
+<option value="">Select Gender</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
 </select>
+
 <button onclick="generate()">Generate</button>
 
 <div id="result"></div>
+
 </div>
 
+</div>
+
+
+
 <script>
-// ---------- NAMES & BIO ----------
+
+/* PAGE NAVIGATION */
+
+function openPage(id){
+
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+
+document.getElementById(id).classList.add("active")
+
+}
+
+function openLink(url){
+window.open(url,"_blank")
+}
+
+
+
+/* GENERATOR */
+
 const maleNames=["Liam","Noah","Oliver","Elijah","James","William","Benjamin","Lucas"];
 const femaleNames=["Olivia","Emma","Ava","Sophia","Isabella","Mia","Amelia","Harper"];
+
 const bioSamples=[
-"Focused on growth and learning every day to achieve personal and professional success.",
-"Building skills and creating value consistently in every opportunity that comes my way.",
-"Exploring opportunities with a positive mindset and striving to improve every day.",
-"Driven by passion and consistency, always aiming for long-term achievements.",
-"Learning, improving, and moving forward with dedication and discipline.",
-"Living a simple life with big goals and a vision to accomplish them.",
-"Working silently for long-term success while learning from every challenge.",
-"Progress over perfection, always prioritizing effort and continuous growth.",
-"Believing in discipline and effort, turning ideas into actionable results.",
-"Turning innovative ideas into actions that create impact and value daily."
+"Focused on growth and learning every day.",
+"Building skills and creating value.",
+"Driven by passion and consistency.",
+"Learning and improving every day.",
+"Turning ideas into real success."
 ];
-let used=[];
 
-// ---------- UTILITY ----------
-function rnd(n){return Math.floor(Math.random()*n);}
-function genNum(len){let s="";while(s.length<len)s+=Math.floor(Math.random()*10);return s;}
+let used=[]
 
-// ---------- GENERATE ----------
+function rnd(n){return Math.floor(Math.random()*n)}
+
+function genNum(len){
+let s=""
+while(s.length<len)s+=Math.floor(Math.random()*10)
+return s
+}
+
 function generate(){
-  let g=document.getElementById("gender").value;
-  if(!g) return alert("Select gender");
-  let full=(g=="Male"?maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]
-                      :femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)]);
-  if(used.includes(full)) return generate();
-  used.push(full);
-  let username=full.replace(" ","").toLowerCase()+genNum(10);
-  let password=genNum(10);
-  let bio=bioSamples[rnd(bioSamples.length)];
-  let imgUrl="https://thispersondoesnotexist.com/image";
 
-  document.getElementById("result").innerHTML = `
-  <div class="flex">
-    <div>
-      <img src="${imgUrl}" alt="Profile Image">
-      <button class="download" onclick="downloadImage('${imgUrl}')">Download Image</button>
-    </div>
-    <div class="account">
-      Name: ${full}<br>
-      Username: ${username}<br>
-      Password: ${password}<br>
-      Bio: ${bio}<br><br>
-      <button class="copy" onclick="copyAll('${full}','${username}','${password}','${bio}')">Copy All</button>
-    </div>
-  </div>`;
+let g=document.getElementById("gender").value
+if(!g)return alert("Select gender")
+
+let full=(g=="Male"?maleNames[rnd(maleNames.length)]+" "+maleNames[rnd(maleNames.length)]
+: femaleNames[rnd(femaleNames.length)]+" "+femaleNames[rnd(femaleNames.length)])
+
+if(used.includes(full))return generate()
+
+used.push(full)
+
+let username=full.replace(" ","").toLowerCase()+genNum(6)
+
+let password=genNum(8)
+
+let bio=bioSamples[rnd(bioSamples.length)]
+
+let imgUrl="https://thispersondoesnotexist.com/image"
+
+document.getElementById("result").innerHTML=`
+
+<div class="flex">
+
+<div>
+
+<img src="${imgUrl}">
+
+<button class="download" onclick="downloadImage('${imgUrl}')">Download Image</button>
+
+</div>
+
+<div class="account">
+
+Name: ${full}<br>
+Username: ${username}<br>
+Password: ${password}<br>
+Bio: ${bio}<br><br>
+
+<button class="copy" onclick="copyAll('${full}','${username}','${password}','${bio}')">Copy All</button>
+
+</div>
+
+</div>
+
+`
+
 }
 
-// ---------- COPY & DOWNLOAD ----------
-function copyAll(name, username, password, bio){
-  navigator.clipboard.writeText(name);
-  navigator.clipboard.writeText(username);
-  navigator.clipboard.writeText(password);
-  navigator.clipboard.writeText(bio);
-  alert("All copied individually!");
+
+
+function copyAll(name,username,password,bio){
+
+navigator.clipboard.writeText(name)
+
+navigator.clipboard.writeText(username)
+
+navigator.clipboard.writeText(password)
+
+navigator.clipboard.writeText(bio)
+
+alert("Copied!")
+
 }
+
+
 
 function downloadImage(url){
-  const link=document.createElement("a");
-  link.href=url;
-  link.download="profile.jpg";
-  link.click();
+
+let a=document.createElement("a")
+
+a.href=url
+
+a.download="profile.jpg"
+
+a.click()
+
 }
 
-// ---------- NEON PARTICLES ----------
-const container=document.querySelector(".container");
-for(let i=0;i<30;i++){
-  let p=document.createElement("div");
-  p.style.position="absolute";
-  p.style.width="8px";
-  p.style.height="8px";
-  p.style.borderRadius="50%";
-  p.style.background="rgba(0,255,255,0.6)";
-  p.style.top=Math.random()*100+"%";
-  p.style.left=Math.random()*100+"%";
-  p.style.animation=`move${i%5} ${2+Math.random()*3}s infinite alternate`;
-  container.appendChild(p);
-}
-
-const style=document.createElement("style");
-style.innerHTML=`
-@keyframes move0{0%{transform:translateY(0);}100%{transform:translateY(-20px);}}
-@keyframes move1{0%{transform:translateY(0);}100%{transform:translateY(20px);}}
-@keyframes move2{0%{transform:translateX(0);}100%{transform:translateX(20px);}}
-@keyframes move3{0%{transform:translateX(0);}100%{transform:translateX(-20px);}}
-@keyframes move4{0%{transform:translateY(0) translateX(0);}100%{transform:translateY(-15px) translateX(15px);}}
-`;
-document.head.appendChild(style);
 </script>
 
 </body>
-</html>
+  </html>
